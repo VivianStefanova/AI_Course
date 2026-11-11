@@ -8,8 +8,7 @@ EMPTY_SPACE_SYMBOL = "_"
 DELIMITER_SYMBOL = " "
 
 
-test = [1, 3, 0, 2]
-n_test = 4
+
 
 class Board:
     def __init__(self, n):
@@ -18,7 +17,7 @@ class Board:
         self.queens_per_row = self.rows_init_board()
         self.queens_per_diag1, self.queens_per_diag2 = self.diag_init_board() # \   /
         #random generator 
-        self.randrange = random.randrange
+        self.ties = []
        
         
 
@@ -52,70 +51,61 @@ class Board:
 
     
     def update_board(self):
-        solved = True
-        board = self.board
-        queens_per_row = self.queens_per_row 
-        queens_per_diag1 = self.queens_per_diag1
-        queens_per_diag2 = self.queens_per_diag2
-        n = self.n
-
-        randrange = self.randrange
-
-        max_conflict = float('-inf')
-        tie_count = 0
-        max_col = 0 
-        for col, row in enumerate(board):
-            conflicts = queens_per_row[row] + queens_per_diag1[row - col + n - 1] + queens_per_diag2[row + col] - 3
-            if conflicts > 0 : solved = False
-            if conflicts > max_conflict:
-                max_conflict = conflicts
-                max_col = col
-                tie_count = 1
-            elif conflicts == max_conflict:
-                tie_count += 1
-                if randrange(tie_count) == 0:
-                    max_col = col
-
-        # Check if its solved
-        if solved : return solved
-
-
-        min_conflict = float('inf')
-        tie_count = 0
-        min_row = 0 
-        old_row = board [max_col]
-        for row in range(n):
-            conflicts = queens_per_row[row] + queens_per_diag1[row - max_col + n - 1] + queens_per_diag2[row + max_col] 
-
-            if row == old_row : conflicts -= 3
-
-            if conflicts < min_conflict:
-                min_conflict = conflicts
-                min_row = row
-                tie_count = 1
-            elif conflicts == min_conflict:
-                tie_count += 1
-                if randrange(tie_count) == 0:
-                    min_row = row
-         
+            solved = True
+            board = self.board
+            queens_per_row = self.queens_per_row 
+            queens_per_diag1 = self.queens_per_diag1
+            queens_per_diag2 = self.queens_per_diag2
+            n = self.n
     
-
-        # Update counters
-        queens_per_row[old_row] -= 1
-        queens_per_diag1[old_row - max_col + n - 1] -= 1
-        queens_per_diag2[old_row + max_col] -= 1
-
-        # Move queen
-        board[max_col] = min_row
-
-        # Update counters
-        queens_per_row[min_row] += 1
-        queens_per_diag1[min_row - max_col + n - 1] += 1
-        queens_per_diag2[min_row + max_col] += 1
-
-        return solved
-
-            
+            ties = self.ties
+    
+            n_1 = n-1
+            max_conflict = float('-inf')
+            max_col = 0 
+            for col, row in enumerate(board):
+                conflicts = queens_per_row[row] + queens_per_diag1[row - col + n_1] + queens_per_diag2[row + col] - 3
+                if conflicts > 0 : solved = False
+                if conflicts > max_conflict:
+                    max_conflict = conflicts
+                    ties = [col]
+                elif conflicts == max_conflict:
+                    ties.append(col)
+            max_col = random.choice(ties)
+            # Check if its solved
+            if solved : return solved
+    
+    
+            min_conflict = float('inf')
+            min_row = 0 
+            old_row = board [max_col]
+            for row in range(n):
+                conflicts = queens_per_row[row] + queens_per_diag1[row - max_col + n_1] + queens_per_diag2[row + max_col] 
+    
+                if row == old_row : conflicts -= 3
+    
+                if conflicts < min_conflict:
+                    min_conflict = conflicts
+                    ties = [row]
+                elif conflicts == min_conflict:
+                    ties.append(row)
+             
+        
+            min_row = random.choice(ties)
+            # Update counters
+            queens_per_row[old_row] -= 1
+            queens_per_diag1[old_row - max_col + n_1] -= 1
+            queens_per_diag2[old_row + max_col] -= 1
+    
+            # Move queen
+            board[max_col] = min_row
+    
+            # Update counters
+            queens_per_row[min_row] += 1
+            queens_per_diag1[min_row - max_col + n_1] += 1
+            queens_per_diag2[min_row + max_col] += 1
+    
+            return solved
         
 
  
@@ -195,8 +185,8 @@ def main():
         if result is None:
             print(-1)
         else: 
-            
-            print(result)
+            pass
+            #print(result)
             # print(board.queens_per_row)
             # print(board.queen_conflicts)
             # print(board)

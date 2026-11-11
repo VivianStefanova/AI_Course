@@ -18,7 +18,8 @@ class Board:
         self.queens_per_row = self.rows_init_board()
         self.queens_per_diag1, self.queens_per_diag2 = self.diag_init_board() # \   /
         self.conflicted_cols, self.conflicted_pos,self.conflicted_queens, self.conflict_values = self.queen_with_conflicts_init()
-        
+         #random generator 
+        self.ties = []
 
     def __str__(self):
         output = ""
@@ -248,12 +249,9 @@ class Board:
         rows = self.queens_per_row
         diag1 = self.queens_per_diag1
         diag2 = self.queens_per_diag2
-
+        ties = self.ties
         min_conflicts = n
-        best_row = -1
-        count = 0
-
-        randrange = random.randrange
+        best_row = 0
 
         for row in range(n):
             conflicts = rows[row] + diag1[row + offset] + diag2[row + col]
@@ -263,14 +261,11 @@ class Board:
 
             if conflicts < min_conflicts:
                 min_conflicts = conflicts
-                best_row = row
-                count = 1
+                ties = [row]
             elif conflicts == min_conflicts:
-                count += 1
-                if randrange(count) == 0:
-                    best_row = row
+                ties.append(row)
 
-        return best_row, min_conflicts
+        return random.choice(ties), min_conflicts
 
     
 
@@ -347,8 +342,8 @@ def main():
         if result is None:
             print(-1)
         else: 
-            
-            print(result)
+            pass
+            #print(result)
             # print(board.queens_per_row)
             # print(board.queen_conflicts)
             # print(board)
